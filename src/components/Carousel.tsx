@@ -1,20 +1,40 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
-import { CarouselData } from '../api';
+import { CarouselData, resolveAssetUrl } from '../api';
 
 export const Carousel = ({ items }: { items: CarouselData[] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
 
   useEffect(() => {
+    if (items.length <= 1) {
+      setCurrentIndex(0);
+      return;
+    }
     const timer = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % items.length);
     }, 4000);
     return () => clearInterval(timer);
   }, [items.length]);
 
-  const next = () => setCurrentIndex((prev) => (prev + 1) % items.length);
-  const prev = () => setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  useEffect(() => {
+    if (!items.length) {
+      setCurrentIndex(0);
+      return;
+    }
+    if (currentIndex >= items.length) {
+      setCurrentIndex(0);
+    }
+  }, [items.length, currentIndex]);
+
+  const next = () => {
+    if (!items.length) return;
+    setCurrentIndex((prev) => (prev + 1) % items.length);
+  };
+  const prev = () => {
+    if (!items.length) return;
+    setCurrentIndex((prev) => (prev - 1 + items.length) % items.length);
+  };
 
   if (!items.length) return null;
 
@@ -30,7 +50,7 @@ export const Carousel = ({ items }: { items: CarouselData[] }) => {
           className="absolute inset-0"
         >
           <img
-            src={items[currentIndex].imageUrl}
+            src={resolveAssetUrl(items[currentIndex].imageUrl)}
             alt={items[currentIndex].title}
             className="w-full h-full object-cover"
             referrerPolicy="no-referrer"

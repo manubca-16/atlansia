@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import api, { CTAData } from '../api';
+import api, { CTAData, resolveAssetUrl } from '../api';
 import { LoadingScreen, SectionTitle } from '../components/Common';
 import { GraduationCap, Briefcase, Rocket, CheckCircle2 } from 'lucide-react';
 import { SiteContent, defaultSiteContent, normalizeSiteContent } from '../siteContent';
@@ -113,7 +113,7 @@ export default function Students() {
             <div className="flex-1 relative">
               <div className="aspect-square bg-mocha/5 rounded-[3rem] overflow-hidden">
                 <img
-                  src={siteContent.studentsPage.experienceImageUrl}
+                  src={resolveAssetUrl(siteContent.studentsPage.experienceImageUrl)}
                   alt="Student Experience"
                   className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-700"
                   referrerPolicy="no-referrer"

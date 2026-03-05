@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import api, { AboutData, CTAData } from '../api';
+import api, { AboutData, CTAData, resolveAssetUrl } from '../api';
 import { LoadingScreen, SectionTitle } from '../components/Common';
 import { Link } from 'react-router-dom';
 import { SiteContent, defaultSiteContent, normalizeSiteContent } from '../siteContent';
@@ -67,7 +67,7 @@ export default function About() {
                 <div className="flex-1 w-full h-80 bg-mocha/5 rounded-[2rem] overflow-hidden">
                   {section.image ? (
                     <img
-                      src={section.image}
+                      src={resolveAssetUrl(section.image)}
                       alt={section.title}
                       className="w-full h-full object-cover opacity-80"
                       referrerPolicy="no-referrer"

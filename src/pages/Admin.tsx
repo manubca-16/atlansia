@@ -9,6 +9,7 @@ import api, {
   HighlightData,
   PhaseData,
   RoleData,
+  resolveAssetUrl,
 } from '../api';
 import { defaultSiteContent, normalizeSiteContent } from '../siteContent';
 
@@ -218,7 +219,7 @@ export default function Admin() {
       const dataUrl = await fileToDataUrl(file);
       const res = await api.post('/uploads/base64', { dataUrl, filename: file.name }, adminConfig());
       const next = [...carousel];
-      next[idx] = { ...next[idx], imageUrl: res.data.url };
+      next[idx] = { ...next[idx], imageUrl: resolveAssetUrl(res.data.url) };
       setCarousel(next);
       setStatus('Image uploaded. Save this carousel item to persist.');
     } catch (err) {
@@ -235,7 +236,7 @@ export default function Admin() {
       const res = await api.post('/uploads/base64', { dataUrl, filename: file.name }, adminConfig());
       const mediaType: 'image' | 'video' = file.type.startsWith('video/') ? 'video' : 'image';
       const next = [...bootcampMedia];
-      next[idx] = { ...next[idx], mediaUrl: res.data.url, mediaType };
+      next[idx] = { ...next[idx], mediaUrl: resolveAssetUrl(res.data.url), mediaType };
       setBootcampMedia(next);
       setStatus('Media uploaded. Save this media item to persist.');
     } catch (err) {
@@ -259,7 +260,7 @@ export default function Admin() {
     try {
       const dataUrl = await fileToDataUrl(file);
       const res = await api.post('/uploads/base64', { dataUrl, filename: file.name }, adminConfig());
-      setUploadedAssetUrl(res.data.url || '');
+      setUploadedAssetUrl(resolveAssetUrl(res.data.url || ''));
       setStatus('Asset uploaded. Paste this URL into Site Content JSON where needed.');
     } catch (err) {
       setStatus(`Asset upload failed: ${errorMessage(err)}`);
@@ -293,7 +294,7 @@ export default function Admin() {
     try {
       const dataUrl = await fileToDataUrl(file);
       const res = await api.post('/uploads/base64', { dataUrl, filename: file.name }, adminConfig());
-      const url = res.data.url || '';
+      const url = resolveAssetUrl(res.data.url || '');
       updateAboutImageUrl(idx, url);
       setStatus(`About section ${idx + 1} image uploaded. Save Site Content JSON to publish.`);
     } catch (err) {
@@ -414,7 +415,7 @@ export default function Admin() {
                 onChange={(v) => updateAboutImageUrl(idx, v)}
               />
               {imageUrl ? (
-                <img src={imageUrl} alt={`${title} preview`} className="w-56 h-36 object-cover rounded-xl border border-black/10" />
+                <img src={resolveAssetUrl(imageUrl)} alt={`${title} preview`} className="w-56 h-36 object-cover rounded-xl border border-black/10" />
               ) : (
                 <p className="text-sm text-taupe">No image set.</p>
               )}
@@ -502,7 +503,7 @@ export default function Admin() {
             />
             {uploading[idx] && <p className="text-sm text-taupe">Uploading...</p>}
             {!item.imageUrl && <p className="text-sm text-red-700">No image uploaded yet.</p>}
-            {item.imageUrl && <img src={item.imageUrl} alt="preview" className="w-48 h-28 object-cover rounded-xl border border-black/10" />}
+            {item.imageUrl && <img src={resolveAssetUrl(item.imageUrl)} alt="preview" className="w-48 h-28 object-cover rounded-xl border border-black/10" />}
           </>
         )}
         onAdd={() => setCarousel(prev => [...prev, { title: '', description: '', imageUrl: '' }])}
@@ -532,8 +533,8 @@ export default function Admin() {
             />
             {uploading[1000 + idx] && <p className="text-sm text-taupe">Uploading...</p>}
             {!item.mediaUrl && <p className="text-sm text-red-700">No media uploaded yet.</p>}
-            {item.mediaUrl && item.mediaType === 'image' && <img src={item.mediaUrl} alt="preview" className="w-56 h-36 object-cover rounded-xl border border-black/10" />}
-            {item.mediaUrl && item.mediaType === 'video' && <video src={item.mediaUrl} className="w-56 h-36 object-cover rounded-xl border border-black/10" controls />}
+            {item.mediaUrl && item.mediaType === 'image' && <img src={resolveAssetUrl(item.mediaUrl)} alt="preview" className="w-56 h-36 object-cover rounded-xl border border-black/10" />}
+            {item.mediaUrl && item.mediaType === 'video' && <video src={resolveAssetUrl(item.mediaUrl)} className="w-56 h-36 object-cover rounded-xl border border-black/10" controls />}
           </>
         )}
         onAdd={() => setBootcampMedia(prev => [...prev, { title: '', description: '', mediaUrl: '', mediaType: 'image', order: prev.length + 1 }])}

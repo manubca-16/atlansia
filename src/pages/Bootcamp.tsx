@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import api, { PhaseData, RoleData, CTAData, BootcampMediaData } from '../api';
+import api, { PhaseData, RoleData, CTAData, BootcampMediaData, resolveAssetUrl } from '../api';
 import { LoadingScreen, SectionTitle } from '../components/Common';
 import { Link } from 'react-router-dom';
 import { CheckCircle2, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-react';
@@ -47,6 +47,16 @@ export default function Bootcamp() {
     return () => clearInterval(timer);
   }, [mediaSlides]);
 
+  useEffect(() => {
+    if (!mediaSlides.length) {
+      setActiveSlide(0);
+      return;
+    }
+    if (activeSlide >= mediaSlides.length) {
+      setActiveSlide(0);
+    }
+  }, [mediaSlides.length, activeSlide]);
+
   if (loading) return <LoadingScreen />;
 
   return (
@@ -85,14 +95,14 @@ export default function Bootcamp() {
                 <div className="relative rounded-2xl overflow-hidden bg-black/5 mb-6">
                   {mediaSlides[activeSlide].mediaType === 'video' ? (
                     <video
-                      src={mediaSlides[activeSlide].mediaUrl}
+                      src={resolveAssetUrl(mediaSlides[activeSlide].mediaUrl)}
                       className="w-full h-[420px] object-cover"
                       controls
                       playsInline
                     />
                   ) : (
                     <img
-                      src={mediaSlides[activeSlide].mediaUrl}
+                      src={resolveAssetUrl(mediaSlides[activeSlide].mediaUrl)}
                       alt={mediaSlides[activeSlide].title || `Bootcamp media ${activeSlide + 1}`}
                       className="w-full h-[420px] object-cover"
                       referrerPolicy="no-referrer"

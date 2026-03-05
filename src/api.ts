@@ -1,10 +1,40 @@
 import axios from 'axios';
 
+const configuredApiBaseUrl = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.trim() || '';
+const normalizedApiBaseUrl = configuredApiBaseUrl.replace(/\/+$/, '');
+
 const api = axios.create({
-  baseURL: '/api',
+  baseURL: normalizedApiBaseUrl || '/api',
 });
 
 export default api;
+
+const absoluteApiBase = normalizedApiBaseUrl || '';
+
+export function resolveAssetUrl(url?: string | null): string {
+  if (!url) return '';
+  if (/^(https?:)?\/\//i.test(url) || url.startsWith('data:') || url.startsWith('blob:')) {
+    return url;
+  }
+
+  const normalizedPath = url.startsWith('/') ? url : `/${url}`;
+  if (!absoluteApiBase) return normalizedPath;
+
+  try {
+    const apiUrl = new URL(absoluteApiBase);
+    const apiPath = apiUrl.pathname.replace(/\/+$/, '');
+    if (apiPath.endsWith('/api')) {
+      apiUrl.pathname = normalizedPath;
+    } else {
+      apiUrl.pathname = normalizedPath;
+    }
+    apiUrl.search = '';
+    apiUrl.hash = '';
+    return apiUrl.toString();
+  } catch {
+    return normalizedPath;
+  }
+}
 
 export interface HeroData {
   title: string;
